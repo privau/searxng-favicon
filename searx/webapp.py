@@ -321,7 +321,7 @@ def image_proxify(url: str):
 
     h = new_hmac(settings['server']['secret_key'], url.encode())
 
-    return '{0}?{1}'.format(url_for('image_proxy'), urlencode(dict(url=url.encode(), h=h)))
+    return '{0}?{1}'.format(url_for('image_proxy'), urlencode(dict(url=url.encode(), h=h)))   
 
 
 def get_translations():
