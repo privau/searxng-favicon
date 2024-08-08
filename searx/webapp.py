@@ -123,6 +123,7 @@ from searx.locales import (
 
 # renaming names from searx imports ...
 from searx.autocomplete import search_autocomplete, backends as autocomplete_backends
+from searx.favicon import search_favicon, backends as favicon_backends
 from searx.redisdb import initialize as redis_initialize
 from searx.sxng_locales import sxng_locales
 from searx.search import SearchWithPlugins, initialize as search_initialize
@@ -321,7 +322,7 @@ def image_proxify(url: str):
 
     h = new_hmac(settings['server']['secret_key'], url.encode())
 
-    return '{0}?{1}'.format(url_for('image_proxy'), urlencode(dict(url=url.encode(), h=h)))   
+    return '{0}?{1}'.format(url_for('image_proxy'), urlencode(dict(url=url.encode(), h=h)))
 
 
 def get_translations():
@@ -388,6 +389,7 @@ def render(template_name: str, **kwargs):
     # values from the preferences
     kwargs['preferences'] = request.preferences
     kwargs['autocomplete'] = request.preferences.get_value('autocomplete')
+    kwargs['favicon'] = request.preferences.get_value('favicon')
     kwargs['infinite_scroll'] = request.preferences.get_value('infinite_scroll')
     kwargs['search_on_category_select'] = request.preferences.get_value('search_on_category_select')
     kwargs['hotkeys'] = request.preferences.get_value('hotkeys')
@@ -1013,6 +1015,7 @@ def preferences():
         ],
         disabled_engines = disabled_engines,
         autocomplete_backends = autocomplete_backends,
+        favicon_backends = favicon_backends,
         shortcuts = {y: x for x, y in engine_shortcuts.items()},
         themes = themes,
         plugins = plugins,

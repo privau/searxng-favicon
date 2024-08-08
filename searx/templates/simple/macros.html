@@ -25,8 +25,8 @@
     <img
       alt="{{ result.parsed_url.netloc }}"
       src="{{ image_proxify('https://www.google.com/s2/favicons?sz=64&domain_url=' ~ result.parsed_url.netloc) }}"
-      onerror="this.onerror=null; this.src='data:image/svg+xml;base64,PHN2ZyB2aWV3Qm94PSIwIDAgMjU2IDI1NiIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KICA8cGF0aCBkPSJNMTg3Ljc3Miw0Mi45NDMzNmE4LjA2MzA2LDguMDYzMDYsMCwwLDAtMS4xMzk2NS0uNzkwNTNBMTAzLjk0NTY3LDEwMy45NDU2NywwLDAsMCw0Mi42MTc2OCwxODcuMzExNTJjLjA0LjA3MTI5LjA3MzI0LjE0NS4xMTU3Mi4yMTU4MmE3Ljk2NjcsNy45NjY3LDAsMCwwLC44MDY2NCwxLjA4OTg1QTEwMy44NDcsMTAzLjg0NywwLDAsMCwxOTEuMjYyNywyMTAuNDgyNDJhNy45OCw3Ljk4LDAsMCwwLDEuNDAyODMtMS4wOTU3LDEwNC41NzIsMTA0LjU3MiwwLDAsMCwzMC44MjE3Ny00MC4yMDYwNiw3Ljk2MjYyLDcuOTYyNjIsMCwwLDAsLjQ5ODA1LTEuMTY2QTEwMy45MTc1MywxMDMuOTE3NTMsMCwwLDAsMTg3Ljc3Miw0Mi45NDMzNlptMjUuMDY0NDYsMTA4LjQ0MTQxLTE1LjkzMTE2LTE0LjU3MDMyYTE2LjA1NDUxLDE2LjA1NDUxLDAsMCwwLTE2LjkzOS0yLjk2Nzc3bC0zMC40NTE2NiwxMi42NTcyM2ExNS45OTgxNiwxNS45OTgxNiwwLDAsMC05LjY4NzUsMTIuNDQyMzhsLTIuMzg0NzcsMTYuMTk2MjlhMTUuOTg0NjgsMTUuOTg0NjgsMCwwLDAsMTEuNzY4MDcsMTcuODA3NjJsMjEuNDU4NSw1LjYzMDg1LDMuOTg4MjgsMy45OTYxQTg3Ljg1OTMyLDg3Ljg1OTMyLDAsMCwxLDYxLjQ4LDE4NS41NTY2NGwzLjkxMzU3LTIuMzYyM0ExNi4wMDAxNywxNi4wMDAxNywwLDAsMCw3My4xMjYsMTY5LjU4NWwuMTg5NDUtMzMuODE4MzZhOC4wMDU4OCw4LjAwNTg4LDAsMCwxLDEuMjU1ODYtNC4yNTgzTDg4LjYwNiwxMDkuNTEyN2E3Ljk5OTgxLDcuOTk5ODEsMCwwLDEsMTEuNDM3NS0yLjE3NDgxbDEyLjc4MzY5LDkuMjYxNzJhMTUuOTU2MzQsMTUuOTU2MzQsMCwwLDAsMTEuNTM0MTgsMi44OTg0NGwzMS40ODE0NC00LjI2MzY3YTE1Ljk5MjY5LDE1Ljk5MjY5LDAsMCwwLDkuOTQ5NzEtNS4zODQ3N0wxODcuOTQ4NzMsODQuMjVBMTUuOTI4NzQsMTUuOTI4NzQsMCwwLDAsMTkxLjgzMyw3My4wMTA3NGwtLjI3OTMtNS44MTNhODcuOTE0LDg3LjkxNCwwLDAsMSwyMS4yODI3Miw4NC4xODdaIi8+Cjwvc3ZnPgo=';">
-  </div>  
+      onerror="src='{{ url_for('static', filename='img/empty_favicon.svg') }}';">
+  </div>
   {%- for part in get_pretty_url(result.parsed_url) -%}
   <span class="url_o{{loop.index}}"><span class="url_i{{loop.index}}">{{- part -}}</span></span>
   {%- endfor %}
