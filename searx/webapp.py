@@ -123,7 +123,7 @@ from searx.locales import (
 
 # renaming names from searx imports ...
 from searx.autocomplete import search_autocomplete, backends as autocomplete_backends
-from searx.favicon import search_favicon, backends as favicon_backends
+from searx.favicon_resolver import search_favicon, backends as favicon_backends
 from searx.redisdb import initialize as redis_initialize
 from searx.sxng_locales import sxng_locales
 from searx.search import SearchWithPlugins, initialize as search_initialize
@@ -297,6 +297,22 @@ def morty_proxify(url: str):
 
     return '{0}?{1}'.format(settings['result_proxy']['url'], urlencode(url_params))
 
+def favicon_proxify(url: str):
+    # url is a FQDN (e.g. example.com, en.wikipedia.org)
+
+    resolver = request.preferences.get_value('favicon_resolver')
+
+    # if resolver is empty, just return nothing
+    if not resolver:
+        return ""
+    
+    # check resolver is valid
+    if resolver not in favicon_backends:
+        return ""
+    
+    h = new_hmac(settings['server']['secret_key'], url.encode())
+
+    return '{0}?{1}'.format(url_for('favicon_proxy'), urlencode(dict(url=url.encode(), h=h)))
 
 def image_proxify(url: str):
 
@@ -359,6 +375,7 @@ def get_client_settings():
     return {
         'autocomplete_provider': req_pref.get_value('autocomplete'),
         'autocomplete_min': get_setting('search.autocomplete_min'),
+        'favicon_resolver': req_pref.get_value('favicon_resolver'),
         'http_method': req_pref.get_value('method'),
         'infinite_scroll': req_pref.get_value('infinite_scroll'),
         'translations': get_translations(),
@@ -389,7 +406,7 @@ def render(template_name: str, **kwargs):
     # values from the preferences
     kwargs['preferences'] = request.preferences
     kwargs['autocomplete'] = request.preferences.get_value('autocomplete')
-    kwargs['favicon'] = request.preferences.get_value('favicon')
+    kwargs['favicon_resolver'] = request.preferences.get_value('favicon_resolver')
     kwargs['infinite_scroll'] = request.preferences.get_value('infinite_scroll')
     kwargs['search_on_category_select'] = request.preferences.get_value('search_on_category_select')
     kwargs['hotkeys'] = request.preferences.get_value('hotkeys')
@@ -433,6 +450,7 @@ def render(template_name: str, **kwargs):
     # helpers to create links to other pages
     kwargs['url_for'] = custom_url_for  # override url_for function in templates
     kwargs['image_proxify'] = image_proxify
+    kwargs['favicon_proxify'] = favicon_proxify
     kwargs['proxify'] = morty_proxify if settings['result_proxy']['url'] is not None else None
     kwargs['proxify_results'] = settings['result_proxy']['proxify_results']
     kwargs['cache_url'] = settings['ui']['cache_url']
@@ -866,6 +884,35 @@ def autocompleter():
 
     suggestions = escape(suggestions, False)
     return Response(suggestions, mimetype=mimetype)
+
+@app.route('/favicon_proxy', methods=['GET'])
+def favicon_proxy():
+    """Return proxied favicon results"""
+    url = request.args.get('url')
+    if not url:
+        return '', 400
+
+    if not is_hmac_of(settings['server']['secret_key'], url.encode(), request.args.get('h', '')):
+        return '', 400
+    
+    # check if the favicon resolver is valid
+    resolver = request.preferences.get_value('favicon_resolver')
+
+    if not resolver:
+        return '', 400
+    
+    if resolver not in favicon_backends:
+        return '', 400
+
+    # parse query
+    raw_text_query = RawTextQuery(url, [])
+
+    resp = search_favicon(resolver, raw_text_query)
+
+    if not resp:
+        return '', 400
+    
+    return Response(resp, mimetype='image/png')
 
 
 @app.route('/preferences', methods=['GET', 'POST'])

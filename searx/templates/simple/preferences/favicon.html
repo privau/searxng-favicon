@@ -1,11 +1,11 @@
 <fieldset>{{- '' -}}
-  <legend id="pref_favicon">{{- _('Favicon Resolver') -}}</legend>{{- '' -}}
+  <legend id="pref_favicon_resolver">{{- _('Favicon Resolver') -}}</legend>{{- '' -}}
   <div class="value">{{- '' -}}
-    <select name="favicon" aria-labelledby="pref_favicon">{{- '' -}}
+    <select name="favicon_resolver" aria-labelledby="pref_favicon_resolver">{{- '' -}}
       <option value=""> - </option>
       {%- for backend in favicon_backends -%}
         <option value="{{ backend }}"
-          {%- if backend == favicon %} selected="selected" {%- endif -%}>
+          {%- if backend == favicon_resolver %} selected="selected" {%- endif -%}>
           {{- backend -}}
         </option>
       {%- endfor -%}

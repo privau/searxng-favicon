@@ -21,12 +21,14 @@
 {% macro result_header(result, favicons, image_proxify) -%}
 <article class="result {% if result['template'] %}result-{{ result.template|replace('.html', '') }}{% else %}result-default{% endif %} {% if result['category'] %}category-{{ result['category'] }}{% endif %}{% for e in result.engines %} {{ e }}{% endfor %}">
   {{- result_open_link(result.url, "url_wrapper") -}}
+  {%- if favicon_resolver != "" %}
   <div class="favicon">
     <img
       alt="{{ result.parsed_url.netloc }}"
-      src="{{ image_proxify('https://www.google.com/s2/favicons?sz=64&domain_url=' ~ result.parsed_url.netloc) }}"
+      src="{{ favicon_proxify(result.parsed_url.netloc) }}"
       onerror="src='{{ url_for('static', filename='img/empty_favicon.svg') }}';">
   </div>
+  {%- endif -%}
   {%- for part in get_pretty_url(result.parsed_url) -%}
   <span class="url_o{{loop.index}}"><span class="url_i{{loop.index}}">{{- part -}}</span></span>
   {%- endfor %}
