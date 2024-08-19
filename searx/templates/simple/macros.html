@@ -26,7 +26,7 @@
     <div class="favicon">
       <img
         alt="{{ result.parsed_url.netloc }}"
-        src="{{ favicon_proxify(result.parsed_url.netloc) }}"
+        src="{{ favicon_url(result.parsed_url.netloc) }}"
       >
     </div>
     {%- endif -%}
@@ -39,7 +39,7 @@
     <div class="favicon">
       <img
         alt="{{ result.parsed_url.netloc }}"
-        src="{{ favicon_proxify(result.parsed_url.netloc) }}"
+        src="{{ favicon_url(result.parsed_url.netloc) }}"
       >
     </div>
     {%- endif -%}

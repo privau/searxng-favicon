@@ -1,6 +1,7 @@
 # SPDX-License-Identifier: AGPL-3.0-or-later
 # pylint: disable=missing-module-docstring, invalid-name
 
+from searx import favicons
 from searx.locales import locales_initialize
 from searx.preferences import (
     EnumStringSetting,
@@ -13,6 +14,7 @@ from searx.preferences import (
 from tests import SearxTestCase
 
 locales_initialize()
+favicons.init()
 
 
 class PluginStub:  # pylint: disable=missing-class-docstring, too-few-public-methods
