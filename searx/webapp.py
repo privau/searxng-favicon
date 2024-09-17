@@ -1024,7 +1024,7 @@ def preferences():
         ],
         disabled_engines = disabled_engines,
         autocomplete_backends = autocomplete_backends,
-        favicon_backends = favicons.RESOLVERS,
+        favicon_resolver_names = favicons.proxy.CFG.resolver_map.keys(),
         shortcuts = {y: x for x, y in engine_shortcuts.items()},
         themes = themes,
         plugins = plugins,

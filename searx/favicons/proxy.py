@@ -3,6 +3,9 @@
 
 from __future__ import annotations
 
+from typing import Callable
+
+import importlib
 import base64
 import pathlib
 import urllib.parse
@@ -15,7 +18,7 @@ from searx import get_setting
 from searx.webutils import new_hmac, is_hmac_of
 from searx.exceptions import SearxEngineResponseException
 
-from .resolvers import RESOLVERS, RESOLVER_MAP
+from .resolvers import DEFAULT_RESOLVER_MAP
 from . import cache
 
 EMPTY_FAVICON_URL = {}
@@ -33,6 +36,16 @@ def init(cfg: FaviconProxyConfig):
     CFG = cfg
 
 
+def _initial_resolver_map():
+    d = {}
+    name: str = get_setting("search.favicon_resolver", None)  # type: ignore
+    if name:
+        func = DEFAULT_RESOLVER_MAP.get(name)
+        if func:
+            d = {name: f"searx.favicons.resolvers.{func.__name__}"}
+    return d
+
+
 class FaviconProxyConfig(BaseModel):
     """Configuration of the favicon proxy."""
 
@@ -41,6 +54,27 @@ class FaviconProxyConfig(BaseModel):
 
     .. _Cache-Control: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Cache-Control
     """
+
+    resolver_map: dict[str, str] = _initial_resolver_map()
+    """The resolver_map is a key / value dictionary where the key is the name of
+    the resolver and the value is the fully qualifying name (fqn) of resolver's
+    function (the callable).  The resolvers from the python module
+    :py:obj:`searx.favicons.resolver` are available by default."""
+
+    def get_resolver(self, name: str) -> Callable | None:
+        """Returns the callable object (function) of the resolver with the
+        ``name``.  If no resolver is registered for the ``name``, ``None`` is
+        returned.
+        """
+        fqn = self.resolver_map.get(name)
+        if fqn is None:
+            return None
+        mod_name, _, func_name = fqn.rpartition('.')
+        mod = importlib.import_module(mod_name)
+        func = getattr(mod, func_name)
+        if func is None:
+            raise ValueError(f"resolver {fqn} is not implemented")
+        return func
 
 
 def favicon_proxy():
@@ -73,9 +107,8 @@ def favicon_proxy():
         return '', 400
 
     resolver = flask.request.preferences.get_value('favicon_resolver')  # type: ignore
-
     # if resolver is empty or not valid, just return HTTP 400.
-    if not resolver or resolver not in RESOLVERS:
+    if not resolver or resolver not in CFG.resolver_map.keys():
         return "", 400
 
     data, mime = search_favicon(resolver, authority)
@@ -109,7 +142,7 @@ def search_favicon(resolver: str, authority: str):
 
     data, mime = (None, None)
 
-    func = RESOLVER_MAP.get(resolver)
+    func = CFG.get_resolver(resolver)
     if func is None:
         return data, mime
 
@@ -155,7 +188,7 @@ def favicon_url(authority: str):
 
     resolver = flask.request.preferences.get_value('favicon_resolver')  # type: ignore
     # if resolver is empty or not valid, just return nothing.
-    if not resolver or resolver not in RESOLVERS:
+    if not resolver or resolver not in CFG.resolver_map.keys():
         return ""
 
     data_mime = cache.CACHE(resolver, authority)

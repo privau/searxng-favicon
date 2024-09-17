@@ -409,7 +409,7 @@ class Preferences:
             'favicon_resolver': EnumStringSetting(
                 settings['search']['favicon_resolver'],
                 locked=is_locked('favicon_resolver'),
-                choices=list(favicons.RESOLVER_MAP) + ['']
+                choices=list(favicons.proxy.CFG.resolver_map.keys()) + ['']
             ),
             'image_proxy': BooleanSetting(
                 settings['server']['image_proxy'],

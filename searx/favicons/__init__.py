@@ -3,10 +3,9 @@
 
 from __future__ import annotations
 
-__all__ = ["init", "favicon_url", "favicon_proxy", "RESOLVERS", "RESOLVER_MAP"]
+__all__ = ["init", "favicon_url", "favicon_proxy"]
 
 from .proxy import favicon_url, favicon_proxy
-from .resolvers import RESOLVERS, RESOLVER_MAP
 
 
 def init():

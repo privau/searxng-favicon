@@ -1,16 +1,16 @@
 # SPDX-License-Identifier: AGPL-3.0-or-later
 """Implementations of the favicon *resolvers* that are available in the favicon
-proxy."""
+proxy by default.  A *resolver* is a function that receives two arguments
+(``domain, req_args```) and returns a tuple ``(data, mime)``."""
 
 from __future__ import annotations
 
-__all__ = ['RESOLVERS', 'RESOLVER_MAP']
+__all__ = ['DEFAULT_RESOLVER_MAP']
 
 from typing import Callable
 from searx import network
 
-RESOLVERS: list[str]
-RESOLVER_MAP: dict[str, Callable]
+DEFAULT_RESOLVER_MAP: dict[str, Callable]
 
 
 def allesedv(domain, req_args):
@@ -72,11 +72,9 @@ def yandex(domain, req_args):
     return data, mime
 
 
-RESOLVER_MAP = {
+DEFAULT_RESOLVER_MAP = {
     "allesedv": allesedv,
     "duckduckgo": duckduckgo,
     "google": google,
     "yandex": yandex,
 }
-
-RESOLVERS = list(RESOLVER_MAP.keys())

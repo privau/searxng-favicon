@@ -75,7 +75,7 @@ class FaviconCacheConfig(BaseModel):
     HOLD_TIME: int = 60 * 60 * 24 * 30  # 30 days
     """Hold time (default in sec.), after which a BLOB is removed from the cache."""
 
-    LIMIT_TOTAL_BYTES: int = 1024 * 1024 * 1024  # 1 GB
+    LIMIT_TOTAL_BYTES: int = 1024 * 1024 * 50  # 50 MB
     """Maximum of bytes (default) stored in the cache of all blobs.  Note: The
     limit is only reached at each maintenance interval after which the oldest
     BLOBs are deleted; the limit is exceeded during the maintenance period. If
