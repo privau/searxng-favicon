@@ -603,6 +603,16 @@ def index():
         query = ('?' + request.query_string.decode()) if request.query_string else ''
         return redirect(url_for('search') + query, 308)
 
+    if request.cookies.get('favicon_resolver'):
+        response = make_response(redirect(url_for('index', **request.args), 301))
+        response.set_cookie('favicon_resolver', '', expires=0)
+        return response
+
+    if request.cookies.get('captcha_token'):
+        response = make_response(redirect(url_for('index', **request.args), 301))
+        response.set_cookie('captcha_token', '', expires=0)
+        return response
+
     return render(
         # fmt: off
         'index.html',
@@ -631,6 +641,17 @@ def search():
     """
     # pylint: disable=too-many-locals, too-many-return-statements, too-many-branches
     # pylint: disable=too-many-statements
+
+    #silently remove favicon_resolver cookie and set it to None, then 301 redirect to /search and keep the query and rest of the parameters
+    if request.cookies.get('favicon_resolver'):
+        response = make_response(redirect(url_for('search', **request.args), 301))
+        response.set_cookie('favicon_resolver', '', expires=0)
+        return response
+
+    if request.cookies.get('captcha_token'):
+        response = make_response(redirect(url_for('search', **request.args), 301))
+        response.set_cookie('captcha_token', '', expires=0)
+        return response
 
     # output_format
     output_format = request.form.get('format', 'html')
